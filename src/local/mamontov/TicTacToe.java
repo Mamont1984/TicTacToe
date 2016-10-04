@@ -1,5 +1,6 @@
 package local.mamontov;
 
+import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -15,8 +16,8 @@ public class TicTacToe {
     final String PLAYER2_NAME = "Computer";
     final char PLAYER1_SIGN = 'X';
     final char PLAYER2_SIGN = 'O';
-    final boolean PL = false;
-    final boolean PC = true;
+    final boolean PL = false;   // Human player
+    final boolean PC = true;    // Computer player
 
     Scanner in = new Scanner(System.in);
     Player player1 = new Player(PLAYER1_NAME, PLAYER1_SIGN, PL);
@@ -27,29 +28,36 @@ public class TicTacToe {
     }
 
     private void game() {
-        /* initialization */
+
         Field field = new Field();
         Player currentPlayer = player1;
 
         System.out.println("Игра началась!");
 
         for (int i = 0; i < CELLS_COUNT; i++) {
-            do {
-                field.showField();
-                System.out.println("Ход игрока " + currentPlayer.name);
-            } while (field.setFieldValue(in.nextInt(), currentPlayer.sign));
 
-            if ((field.isWin(currentPlayer)) && (currentPlayer == player1)) {
-                field.showField();
-                System.out.println("Выиграл " + player1.name + " !!!");
-                System.exit(0);
+            if (currentPlayer.isComputer) {
+                    field.showField();
+                    System.out.println("Ход игрока " + currentPlayer.name);
+                    field.setFieldValue(currentPlayer.doTurn(field.cellsArray), currentPlayer.sign);
+                    System.out.println(currentPlayer.doTurn(field.cellsArray));
+            } else {
+                do {
+                    field.showField();
+                    System.out.println("Ход игрока " + currentPlayer.name);
+                } while (field.setFieldValue(in.nextInt(), currentPlayer.sign));
             }
-            if ((field.isWin(currentPlayer)) && (currentPlayer == player2)) {
-                field.showField();
-                System.out.println("Выиграл " + player2.name + " !!!");
-                System.exit(0);
-            }
-
+                /* Victory checks */
+                if ((field.isWin(currentPlayer)) && (currentPlayer == player1)) {
+                    field.showField();
+                    System.out.println("Выиграл " + player1.name + " !!!");
+                    System.exit(0);
+                } else if ((field.isWin(currentPlayer)) && (currentPlayer == player2)) {
+                    field.showField();
+                    System.out.println("Выиграл " + player2.name + " !!!");
+                    System.exit(0);
+                }
+            /* Switch to next player */
             if (currentPlayer == player1) {
                 currentPlayer = player2;
             } else {
@@ -63,7 +71,7 @@ public class TicTacToe {
     class Field {
 
         private int[][] cellsArray = new int[FIELD_WIDTH][FIELD_HEIGHT];
-
+        /* initializing play field */
         Field() {
             int fieldNumber = 0;
             for (int i = 0; i < FIELD_HEIGHT; i++) {
@@ -72,7 +80,7 @@ public class TicTacToe {
                 }
             }
         }
-
+        /* Make a move */
         boolean setFieldValue(int cell, char currentPlayerChar) {
             int cellX = cell / FIELD_WIDTH;
             int cellY = cell % FIELD_WIDTH;
@@ -88,7 +96,7 @@ public class TicTacToe {
         int getCell(int x, int y) {
             return cellsArray[x][y];
         }
-
+        /* Chekin for a win */
         boolean isWin(Player currentPlayer) {
 
         int s = (int) currentPlayer.sign;
@@ -111,7 +119,7 @@ public class TicTacToe {
                 for (int j = 0; j < FIELD_HEIGHT; j++) {
                     if ((getCell(i, j) == (int) player1.sign)) {
                         System.out.print(player1.sign + " ");
-                    } else if ((getCell(i, j) == (int) player2.sign)){
+                    } else if ((getCell(i, j) == (int) player2.sign)) {
                         System.out.print(player2.sign + " ");
                     } else {
                         System.out.print(getCell(i, j) + " ");
@@ -138,5 +146,21 @@ public class TicTacToe {
             this.isComputer = isComputer;
             intNumber = (int) sign;
         }
+
+        int doTurn(int[][] cellsArray) {
+            Random random = new Random();
+            int computersTurn;
+            int cellX;
+            int cellY;
+                do {
+                    computersTurn = random.nextInt(CELLS_COUNT);
+                    cellX = computersTurn / FIELD_WIDTH;
+                    cellY = computersTurn % FIELD_WIDTH;
+                }
+                while ((cellsArray[cellX][cellY] == ((int) PLAYER1_SIGN))
+                    || (cellsArray[cellX][cellY] == ((int) PLAYER2_SIGN)));
+            return computersTurn;
+        }
     }
+
 }
