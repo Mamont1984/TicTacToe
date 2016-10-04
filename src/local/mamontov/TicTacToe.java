@@ -1,3 +1,5 @@
+package local.mamontov;
+
 import java.util.Scanner;
 
 /**
@@ -27,7 +29,6 @@ public class TicTacToe {
     private void game() {
         /* initialization */
         Field field = new Field();
-        field.init();
         Player currentPlayer = player1;
 
         System.out.println("Игра началась!");
@@ -37,13 +38,23 @@ public class TicTacToe {
                 field.showField();
                 System.out.println("Ход игрока " + currentPlayer.name);
             } while (field.setFieldValue(in.nextInt(), currentPlayer.sign));
-                if (currentPlayer == player1) {
-                    currentPlayer = player2;
-                } else {
-                    currentPlayer = player1;
-                }
 
-            // if (field.checkWin() != 0) break;
+            if ((field.isWin(currentPlayer)) && (currentPlayer == player1)) {
+                field.showField();
+                System.out.println("Выиграл " + player1.name + " !!!");
+                System.exit(0);
+            }
+            if ((field.isWin(currentPlayer)) && (currentPlayer == player2)) {
+                field.showField();
+                System.out.println("Выиграл " + player2.name + " !!!");
+                System.exit(0);
+            }
+
+            if (currentPlayer == player1) {
+                currentPlayer = player2;
+            } else {
+                currentPlayer = player1;
+            }
         }
 
         System.out.println("Игра закончилась ничьей!");
@@ -53,8 +64,8 @@ public class TicTacToe {
 
         private int[][] cellsArray = new int[FIELD_WIDTH][FIELD_HEIGHT];
 
-        private void init() {
-            int fieldNumber = 1;
+        Field() {
+            int fieldNumber = 0;
             for (int i = 0; i < FIELD_HEIGHT; i++) {
                 for (int j = 0; j < FIELD_WIDTH; j++) {
                     cellsArray[i][j] = fieldNumber++;
@@ -65,50 +76,32 @@ public class TicTacToe {
         boolean setFieldValue(int cell, char currentPlayerChar) {
             int cellX = cell / FIELD_WIDTH;
             int cellY = cell % FIELD_WIDTH;
-            if ((cell > 0) && (cell <= CELLS_COUNT)
+            if ((cell >= 0) && (cell < CELLS_COUNT)
                 && ((cellsArray[cellX][cellY] != ((int) PLAYER1_SIGN))
                 && (cellsArray[cellX][cellY] != ((int) PLAYER2_SIGN)))){
                         cellsArray[cellX][cellY] = currentPlayerChar;
-                        return false;
+                        return false; //good cell
             }
-            return true;
+            return true; //bad cell, try one more time
         }
 
         int getCell(int x, int y) {
             return cellsArray[x][y];
         }
 
-        int checkWin() {
+        boolean isWin(Player currentPlayer) {
 
-            int a = 0;
-            int b = 0;
-            int c = 0;
-            int x = 0;
-            int y = 0;
-            int z = 0;
-            int k = 0;
-            int l = 0;
+        int s = (int) currentPlayer.sign;
+            for (int i = 0; i < FIELD_HEIGHT; i++) {
+                if ((cellsArray[i][0] == s) && (cellsArray[i][1] == s) && (cellsArray[i][2] == s)) return true;
 
-            for (int i = 0; i < 3; i++) {
-                a += cellsArray[i][0];   //
-                b += cellsArray[i][1];
-                c += cellsArray[i][2];
-                x += cellsArray[0][i];
-                y += cellsArray[1][i];
-                z += cellsArray[2][i];
-                k += cellsArray[i][i];   //диагональ 1
-                l += cellsArray[i][2 - i]; //диагональ 2
+                if ((cellsArray[0][i] == s) && (cellsArray[1][i] == s) && (cellsArray[2][i] == s)) return true;
             }
 
-            if ((a == -3) || (b == -3) || (c == -3)  // столбцы test
-                    || (x == -3) || (y == -3) || (z == -3) // строки test
-                    || (k == -3) || (l == -3)) return 2;  // диагонали test
+            if (((cellsArray[0][0] == s) && (cellsArray[1][1] == s) && (cellsArray[2][2] == s)) ||
+                ((cellsArray[2][0] == s) && (cellsArray[1][1] == s) && (cellsArray[0][2] == s))) return true;
 
-            if ((a == 3) || (b == 3) || (c == 3)     // столбцы test
-                    || (x == 3) || (y == 3) || (z == 3)// строки test
-                    || (k == 3) || (l == 3)) return 1;// диагонали test
-
-            return 0;
+            return false;
         }
 
 
@@ -116,7 +109,13 @@ public class TicTacToe {
 
             for (int i = 0; i < FIELD_WIDTH; i++) {
                 for (int j = 0; j < FIELD_HEIGHT; j++) {
-                    System.out.print(getCell(i, j) + " ");
+                    if ((getCell(i, j) == (int) player1.sign)) {
+                        System.out.print(player1.sign + " ");
+                    } else if ((getCell(i, j) == (int) player2.sign)){
+                        System.out.print(player2.sign + " ");
+                    } else {
+                        System.out.print(getCell(i, j) + " ");
+                    }
                 }
                 System.out.println("");
             }
