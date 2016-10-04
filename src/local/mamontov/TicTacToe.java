@@ -12,15 +12,15 @@ public class TicTacToe {
     final int FIELD_WIDTH = 3;
     final int FIELD_HEIGHT = 3;
     final int CELLS_COUNT = FIELD_HEIGHT * FIELD_HEIGHT;
-    final String PLAYER1_NAME = "Player";
-    final String PLAYER2_NAME = "Computer";
+    final String PLAYER1_NAME = "Computer1";
+    final String PLAYER2_NAME = "Computer2";
     final char PLAYER1_SIGN = 'X';
     final char PLAYER2_SIGN = 'O';
     final boolean PL = false;   // Human player
     final boolean PC = true;    // Computer player
 
     Scanner in = new Scanner(System.in);
-    Player player1 = new Player(PLAYER1_NAME, PLAYER1_SIGN, PL);
+    Player player1 = new Player(PLAYER1_NAME, PLAYER1_SIGN, PC);
     Player player2 = new Player(PLAYER2_NAME, PLAYER2_SIGN, PC);
 
     public static void main(String[] args) {
@@ -37,10 +37,10 @@ public class TicTacToe {
         for (int i = 0; i < CELLS_COUNT; i++) {
 
             if (currentPlayer.isComputer) {
+                do {
                     field.showField();
                     System.out.println("Ход игрока " + currentPlayer.name);
-                    field.setFieldValue(currentPlayer.doTurn(field.cellsArray), currentPlayer.sign);
-                    System.out.println(currentPlayer.doTurn(field.cellsArray));
+                }while (field.setFieldValue(currentPlayer.doTurn(field.cellsArray), currentPlayer.sign));
             } else {
                 do {
                     field.showField();
@@ -64,7 +64,7 @@ public class TicTacToe {
                 currentPlayer = player1;
             }
         }
-
+        field.showField();
         System.out.println("Игра закончилась ничьей!");
     }
 
@@ -159,6 +159,7 @@ public class TicTacToe {
                 }
                 while ((cellsArray[cellX][cellY] == ((int) PLAYER1_SIGN))
                     || (cellsArray[cellX][cellY] == ((int) PLAYER2_SIGN)));
+            System.out.println(computersTurn);
             return computersTurn;
         }
     }
